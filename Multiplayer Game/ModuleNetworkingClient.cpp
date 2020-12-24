@@ -135,6 +135,10 @@ void ModuleNetworkingClient::onPacketReceived(const InputMemoryStream &packet, c
 			secondsSincelastRecievedPing = 0.0f;
 		}
 		// TODO(you): World state replication lab session
+		else if (message == ServerMessage::Replication)
+		{
+			RepManagerClient.read(packet);
+		}
 
 		// TODO(you): Reliability on top of UDP lab session
 	}

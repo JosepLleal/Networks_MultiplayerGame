@@ -146,6 +146,7 @@ void ModuleNetworkingServer::onPacketReceived(const InputMemoryStream &packet, c
 					GameObject *gameObject = networkGameObjects[i];
 					
 					// TODO(you): World state replication lab session
+					proxy->RepManagerServer.create(gameObject->networkId);
 				}
 
 				LOG("Message received: hello - from player %s", proxy->name.c_str());
@@ -187,6 +188,7 @@ void ModuleNetworkingServer::onPacketReceived(const InputMemoryStream &packet, c
 				}
 			}
 		}
+		// TODO(you): UDP virtual connection lab session
 		else if (message == ClientMessage::Ping)
 		{
 			if (proxy != nullptr)
@@ -195,7 +197,7 @@ void ModuleNetworkingServer::onPacketReceived(const InputMemoryStream &packet, c
 			}
 		}
 
-		// TODO(you): UDP virtual connection lab session
+		
 	}
 }
 
@@ -253,6 +255,19 @@ void ModuleNetworkingServer::onUpdate()
 				}
 
 				// TODO(you): World state replication lab session
+				clientProxy.secondsSinceLastRepSent += Time.deltaTime;
+
+				if (clientProxy.secondsSinceLastRepSent > REPLICATION_INTERVAL_SECONDS)
+				{
+					clientProxy.secondsSinceLastRepSent = 0.0f;
+
+					OutputMemoryStream packet;
+					packet << PROTOCOL_ID;
+					packet << ServerMessage::Replication;
+
+					clientProxy.RepManagerServer.write(packet);
+					sendPacket(packet, clientProxy.address);
+				}
 
 				// TODO(you): Reliability on top of UDP lab session
 			}
@@ -395,6 +410,7 @@ GameObject * ModuleNetworkingServer::instantiateNetworkObject()
 		if (clientProxies[i].connected)
 		{
 			// TODO(you): World state replication lab session
+			clientProxies[i].RepManagerServer.create(gameObject->networkId);
 		}
 	}
 
@@ -409,6 +425,7 @@ void ModuleNetworkingServer::updateNetworkObject(GameObject * gameObject)
 		if (clientProxies[i].connected)
 		{
 			// TODO(you): World state replication lab session
+			clientProxies[i].RepManagerServer.update(gameObject->networkId);
 		}
 	}
 }
@@ -421,6 +438,7 @@ void ModuleNetworkingServer::destroyNetworkObject(GameObject * gameObject)
 		if (clientProxies[i].connected)
 		{
 			// TODO(you): World state replication lab session
+			clientProxies[i].RepManagerServer.destroy(gameObject->networkId);
 		}
 	}
 
