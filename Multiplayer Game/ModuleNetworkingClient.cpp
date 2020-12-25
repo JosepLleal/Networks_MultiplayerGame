@@ -137,6 +137,12 @@ void ModuleNetworkingClient::onPacketReceived(const InputMemoryStream &packet, c
 		// TODO(you): World state replication lab session
 		else if (message == ServerMessage::Replication)
 		{
+			uint32 sequenceNumber;
+			packet >> sequenceNumber;
+
+			if (sequenceNumber > inputDataFront)
+				inputDataFront = sequenceNumber; 
+
 			RepManagerClient.read(packet);
 		}
 
@@ -225,7 +231,7 @@ void ModuleNetworkingClient::onUpdate()
 			}
 
 			// Clear the queue
-			inputDataFront = inputDataBack;
+			//inputDataFront = inputDataBack;
 
 			sendPacket(packet, serverAddress);
 		}

@@ -267,6 +267,8 @@ void ModuleNetworkingServer::onUpdate()
 					packet << PROTOCOL_ID;
 					packet << ServerMessage::Replication;
 
+					packet << clientProxy.nextExpectedInputSequenceNumber; 
+
 					clientProxy.RepManagerServer.write(packet);
 					sendPacket(packet, clientProxy.address);
 				}
