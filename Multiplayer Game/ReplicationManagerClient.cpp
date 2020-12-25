@@ -9,7 +9,7 @@ void ReplicationManagerClient::read(const InputMemoryStream& packet)
 	{
 		uint32 networkId;
 		packet >> networkId;
-		ReplicationAction action;
+		ReplicationAction action = ReplicationAction::None;
 		packet >> action;
 
 		if (action == ReplicationAction::Create)
@@ -24,18 +24,31 @@ void ReplicationManagerClient::read(const InputMemoryStream& packet)
 				packet >> go->size.x;
 				packet >> go->size.y;
 				packet >> go->angle;
+				packet >> go->sprite_id;
+				packet >> go->tag;
 
 				BehaviourType type;
 				packet >> type;
 
 				if (type == BehaviourType::Spaceship)
 				{
+					go->behaviour = App->modBehaviour->addSpaceship(go);
 					go->sprite = App->modRender->addSprite(go);
 					go->sprite->order = 5;
-					go->sprite->texture = App->modResources->spacecraft1;//at the moment always type1
+
+					if (go->sprite_id == 0) {
+						go->sprite->texture = App->modResources->spacecraft1;
+					}
+					else if (go->sprite_id == 1) {
+						go->sprite->texture = App->modResources->spacecraft2;
+					}
+					else if (go->sprite_id == 2) {
+						go->sprite->texture = App->modResources->spacecraft3;
+					}
 				}
 				else if (type == BehaviourType::Laser)
 				{
+					go->behaviour = App->modBehaviour->addLaser(go);
 					go->sprite = App->modRender->addSprite(go);
 					go->sprite->order = 4;
 					go->sprite->texture = App->modResources->laser;

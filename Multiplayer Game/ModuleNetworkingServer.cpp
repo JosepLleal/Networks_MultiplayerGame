@@ -146,7 +146,8 @@ void ModuleNetworkingServer::onPacketReceived(const InputMemoryStream &packet, c
 					GameObject *gameObject = networkGameObjects[i];
 					
 					// TODO(you): World state replication lab session
-					proxy->RepManagerServer.create(gameObject->networkId);
+					if(proxy->gameObject != gameObject)
+						proxy->RepManagerServer.create(gameObject->networkId);
 				}
 
 				LOG("Message received: hello - from player %s", proxy->name.c_str());
@@ -365,18 +366,22 @@ GameObject * ModuleNetworkingServer::spawnPlayer(uint8 spaceshipType, vec2 initi
 	gameObject->position = initialPosition;
 	gameObject->size = { 100, 100 };
 	gameObject->angle = initialAngle;
+	
 
 	// Create sprite
 	gameObject->sprite = App->modRender->addSprite(gameObject);
 	gameObject->sprite->order = 5;
 	if (spaceshipType == 0) {
 		gameObject->sprite->texture = App->modResources->spacecraft1;
+		gameObject->sprite_id = 0;
 	}
 	else if (spaceshipType == 1) {
 		gameObject->sprite->texture = App->modResources->spacecraft2;
+		gameObject->sprite_id = 1;
 	}
 	else {
 		gameObject->sprite->texture = App->modResources->spacecraft3;
+		gameObject->sprite_id = 2;
 	}
 
 	// Create collider
@@ -419,7 +424,7 @@ GameObject * ModuleNetworkingServer::instantiateNetworkObject()
 
 void ModuleNetworkingServer::updateNetworkObject(GameObject * gameObject)
 {
-	// Notify all client proxies' replication manager to destroy the object remotely
+	// Notify all client proxies' replication manager to update the object remotely
 	for (int i = 0; i < MAX_CLIENTS; ++i)
 	{
 		if (clientProxies[i].connected)

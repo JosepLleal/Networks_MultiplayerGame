@@ -16,13 +16,14 @@ void Laser::update()
 
 	const float pixelsPerSecond = 1000.0f;
 	gameObject->position += vec2FromDegrees(gameObject->angle) * pixelsPerSecond * Time.deltaTime;
-
 	if (isServer)
 	{
 		const float neutralTimeSeconds = 0.1f;
 		if (secondsSinceCreation > neutralTimeSeconds && gameObject->collider == nullptr) {
 			gameObject->collider = App->modCollision->addCollider(ColliderType::Laser, gameObject);
 		}
+
+		//NetworkUpdate(gameObject);
 
 		const float lifetimeSeconds = 2.0f;
 		if (secondsSinceCreation >= lifetimeSeconds) {

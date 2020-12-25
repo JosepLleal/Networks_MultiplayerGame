@@ -38,6 +38,8 @@ void ReplicationManagerServer::write(OutputMemoryStream& packet)
 				packet << go->size.x;
 				packet << go->size.y;
 				packet << go->angle;
+				packet << go->sprite_id;
+				packet << go->tag;
 
 				if (go->behaviour)
 					packet << go->behaviour->type();
