@@ -38,13 +38,27 @@ void ReplicationManagerServer::write(OutputMemoryStream& packet)
 				packet << go->size.x;
 				packet << go->size.y;
 				packet << go->angle;
-				packet << go->sprite_id;
-				packet << go->tag;
 
+				std::string tex = "";
+				if (go->sprite)
+				{
+					tex = go->sprite->texture->filename;
+					packet << tex;
+					packet << go->sprite->order;
+				}
+				else
+				{
+					packet << tex;
+					packet << 0;
+				}
+				
+				
 				if (go->behaviour)
 					packet << go->behaviour->type();
 				else
 					packet << BehaviourType::None;
+				
+				packet << go->tag;
 			}
 			
 		}

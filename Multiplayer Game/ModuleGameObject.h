@@ -18,7 +18,6 @@ struct GameObject
 
 	// "Script" component
 	Behaviour *behaviour = nullptr;
-	int sprite_id = -1;
 
 	// Tag for custom usage
 	uint32 tag = 0;

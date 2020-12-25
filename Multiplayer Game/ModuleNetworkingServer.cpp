@@ -373,15 +373,12 @@ GameObject * ModuleNetworkingServer::spawnPlayer(uint8 spaceshipType, vec2 initi
 	gameObject->sprite->order = 5;
 	if (spaceshipType == 0) {
 		gameObject->sprite->texture = App->modResources->spacecraft1;
-		gameObject->sprite_id = 0;
 	}
 	else if (spaceshipType == 1) {
 		gameObject->sprite->texture = App->modResources->spacecraft2;
-		gameObject->sprite_id = 1;
 	}
 	else {
 		gameObject->sprite->texture = App->modResources->spacecraft3;
-		gameObject->sprite_id = 2;
 	}
 
 	// Create collider

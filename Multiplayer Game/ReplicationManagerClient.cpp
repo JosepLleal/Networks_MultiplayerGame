@@ -24,35 +24,44 @@ void ReplicationManagerClient::read(const InputMemoryStream& packet)
 				packet >> go->size.x;
 				packet >> go->size.y;
 				packet >> go->angle;
-				packet >> go->sprite_id;
-				packet >> go->tag;
+
+				std::string tex;
+				packet >> tex;
+				go->sprite = App->modRender->addSprite(go);
+				packet >> go->sprite->order;
+				if (go->sprite)
+				{
+					if (tex == "spacecraft1.png")
+						go->sprite->texture = App->modResources->spacecraft1;
+					else if(tex == "spacecraft2.png")
+						go->sprite->texture = App->modResources->spacecraft2;
+					else if (tex == "spacecraft3.png")
+						go->sprite->texture = App->modResources->spacecraft3;
+					else if (tex == "laser.png")
+						go->sprite->texture = App->modResources->laser;
+					else if (tex == "explosion1.png")
+					{
+						go->sprite->texture = App->modResources->explosion1;
+						//animated sprite
+						go->animation = App->modRender->addAnimation(go);
+						go->animation->clip = App->modResources->explosionClip;
+						//explosion sound
+						App->modSound->playAudioClip(App->modResources->audioClipExplosion);
+					}
+				}
 
 				BehaviourType type;
 				packet >> type;
 
 				if (type == BehaviourType::Spaceship)
-				{
 					go->behaviour = App->modBehaviour->addSpaceship(go);
-					go->sprite = App->modRender->addSprite(go);
-					go->sprite->order = 5;
-
-					if (go->sprite_id == 0) {
-						go->sprite->texture = App->modResources->spacecraft1;
-					}
-					else if (go->sprite_id == 1) {
-						go->sprite->texture = App->modResources->spacecraft2;
-					}
-					else if (go->sprite_id == 2) {
-						go->sprite->texture = App->modResources->spacecraft3;
-					}
-				}
 				else if (type == BehaviourType::Laser)
-				{
 					go->behaviour = App->modBehaviour->addLaser(go);
-					go->sprite = App->modRender->addSprite(go);
-					go->sprite->order = 4;
-					go->sprite->texture = App->modResources->laser;
-				}
+
+
+				packet >> go->tag;
+
+				
 			}
 			else
 			{
