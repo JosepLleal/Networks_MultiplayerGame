@@ -152,7 +152,7 @@ void ModuleNetworkingClient::onUpdate()
 	// TODO(you): UDP virtual connection lab session
 	if (secondsSincelastRecievedPing > DISCONNECT_TIMEOUT_SECONDS)
 	{
-		disconnect();
+		onDisconnect();
 	}
 
 	if (state == ClientState::Connecting)

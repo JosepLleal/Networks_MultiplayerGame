@@ -232,6 +232,7 @@ void ModuleNetworkingServer::onUpdate()
 				{
 					//Disconnect client
 					destroyClientProxy(&clientProxy);
+					continue;
 				}
 
 				clientProxy.secondsSinceLastPingSent += Time.deltaTime;
