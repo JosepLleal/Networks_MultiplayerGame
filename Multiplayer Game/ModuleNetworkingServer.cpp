@@ -189,6 +189,11 @@ void ModuleNetworkingServer::onPacketReceived(const InputMemoryStream &packet, c
 				}
 			}
 		}
+		else if(message == ClientMessage::Acknowledge)
+		{
+			if(proxy != nullptr)
+				proxy->ServerDelManager.processAckdSequenceNumbers(packet);
+		}
 		// TODO(you): UDP virtual connection lab session
 		else if (message == ClientMessage::Ping)
 		{
@@ -269,11 +274,14 @@ void ModuleNetworkingServer::onUpdate()
 
 					packet << clientProxy.nextExpectedInputSequenceNumber; 
 
+					Delivery* del = clientProxy.ServerDelManager.writeSequenceNumber(packet);
+
 					clientProxy.RepManagerServer.write(packet);
 					sendPacket(packet, clientProxy.address);
 				}
 
 				// TODO(you): Reliability on top of UDP lab session
+				clientProxy.ServerDelManager.processTimedOutPackets();
 			}
 		}
 	}
