@@ -88,5 +88,16 @@ void DeliveryManager::processTimedOutPackets()
 
 void DeliveryManager::clear()
 {
-	//TODO
+	for (std::map<uint32, Delivery*>::iterator it = pendingDeliveries.begin(); it != pendingDeliveries.end(); ++it)
+	{
+		Delivery* del = (*it).second; 
+
+		if (del->delegate)
+			delete del->delegate;
+
+		delete del;
+	}
+
+	pendingDeliveries.clear(); 
+	pendingAck.clear(); 
 }

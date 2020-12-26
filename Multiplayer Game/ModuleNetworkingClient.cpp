@@ -229,6 +229,7 @@ void ModuleNetworkingClient::onUpdate()
 			ack_packet << PROTOCOL_ID;
 			ack_packet << ClientMessage::Acknowledge;
 			ClientDelManager.writeSequenceNumbersPendingAck(ack_packet);
+			sendPacket(ack_packet, serverAddress); 
 
 			for (uint32 i = inputDataFront; i < inputDataBack; ++i)
 			{

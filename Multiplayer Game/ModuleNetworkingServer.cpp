@@ -275,8 +275,10 @@ void ModuleNetworkingServer::onUpdate()
 					packet << clientProxy.nextExpectedInputSequenceNumber; 
 
 					Delivery* del = clientProxy.ServerDelManager.writeSequenceNumber(packet);
+					DeliveryDelegateRepManager* Delegate = new DeliveryDelegateRepManager(); 
+					del->delegate = Delegate; 
 
-					clientProxy.RepManagerServer.write(packet);
+					clientProxy.RepManagerServer.write(packet, Delegate);
 					sendPacket(packet, clientProxy.address);
 				}
 

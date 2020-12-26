@@ -17,7 +17,7 @@ void ReplicationManagerServer::destroy(uint32 networkID)
 	commands[networkID] = ReplicationAction::Destroy;
 }
 
-void ReplicationManagerServer::write(OutputMemoryStream& packet)
+void ReplicationManagerServer::write(OutputMemoryStream& packet, DeliveryDelegateRepManager* del)
 {
 	if (commands.size() == 0)
 		return;
@@ -76,10 +76,41 @@ void ReplicationManagerServer::write(OutputMemoryStream& packet)
 			}
 			
 		}
-
 		//Delete action does not need any more information than action and networID
+		ReplicationCommand command; 
+		command.action = (*it).second; 
+		command.networkId = (*it).first; 
+
+		del->delegateCommands.push_back(command); 
 	}
+	del->RepManager = this;
+
 	//Cleaning commands map
 	commands.clear();
 }
 
+void DeliveryDelegateRepManager::onDeliverySuccess(DeliveryManager* deliveryManager)
+{
+}
+
+void DeliveryDelegateRepManager::onDeliveryFailure(DeliveryManager* deliveryManager)
+{
+	for (auto command : delegateCommands)
+	{
+		switch (command.action)
+		{
+			case ReplicationAction::Create:
+			{
+				RepManager->create(command.networkId); 
+			}
+			case ReplicationAction::Update:
+			{
+				RepManager->update(command.networkId);
+			}
+			case ReplicationAction::Destroy:
+			{
+				RepManager->destroy(command.networkId);
+			}
+		}
+	}
+}
