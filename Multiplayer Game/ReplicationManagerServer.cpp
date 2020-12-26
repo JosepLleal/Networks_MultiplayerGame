@@ -29,42 +29,50 @@ void ReplicationManagerServer::write(OutputMemoryStream& packet, DeliveryDelegat
 
 		if ((*it).second == ReplicationAction::Create)
 		{
-			GameObject* go = App->modLinkingContext->getNetworkGameObject((*it).first, true);
+			GameObject* go = App->modLinkingContext->getNetworkGameObject((*it).first, false);
 
-			if (go)
+			if (!go)
 			{
-				packet << go->position.x;
-				packet << go->position.y;
-				packet << go->size.x;
-				packet << go->size.y;
-				packet << go->angle;
-
-				std::string tex = "";
-				if (go->sprite)
-				{
-					tex = go->sprite->texture->filename;
-					packet << tex;
-					packet << go->sprite->order;
-				}
-				else
-				{
-					packet << tex;
-					packet << 0;
-				}
-				
-				
-				if (go->behaviour)
-					packet << go->behaviour->type();
-				else
-					packet << BehaviourType::None;
-				
-				packet << go->tag;
+				go = Instantiate();
+				go->networkId = (*it).first;
+				packet << 1;
 			}
+			else
+			{
+				packet << 0;
+			}
+
+			packet << go->position.x;
+			packet << go->position.y;
+			packet << go->size.x;
+			packet << go->size.y;
+			packet << go->angle;
+
+			std::string tex = "";
+			if (go->sprite)
+			{
+				tex = go->sprite->texture->filename;
+				packet << tex;
+				packet << go->sprite->order;
+			}
+			else
+			{
+				packet << tex;
+				packet << 0;
+			}
+
+
+			if (go->behaviour)
+				packet << go->behaviour->type();
+			else
+				packet << BehaviourType::None;
+
+			packet << go->tag;
 			
 		}
 		else if ((*it).second == ReplicationAction::Update)
 		{
-			GameObject* go = App->modLinkingContext->getNetworkGameObject((*it).first, true);
+			GameObject* go = App->modLinkingContext->getNetworkGameObject((*it).first);
 
 			if (go)
 			{
@@ -77,6 +85,7 @@ void ReplicationManagerServer::write(OutputMemoryStream& packet, DeliveryDelegat
 			
 		}
 		//Delete action does not need any more information than action and networID
+
 		ReplicationCommand command; 
 		command.action = (*it).second; 
 		command.networkId = (*it).first; 
@@ -102,14 +111,17 @@ void DeliveryDelegateRepManager::onDeliveryFailure(DeliveryManager* deliveryMana
 			case ReplicationAction::Create:
 			{
 				RepManager->create(command.networkId); 
+				break;
 			}
 			case ReplicationAction::Update:
 			{
 				RepManager->update(command.networkId);
+				break;
 			}
 			case ReplicationAction::Destroy:
 			{
 				RepManager->destroy(command.networkId);
+				break;
 			}
 		}
 	}

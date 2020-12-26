@@ -14,17 +14,30 @@ void ReplicationManagerClient::read(const InputMemoryStream& packet)
 
 		if (action == ReplicationAction::Create)
 		{
-			GameObject* go = nullptr;
-			go = App->modLinkingContext->getNetworkGameObject(networkId);
-			if (go != nullptr)
-			{
-				App->modLinkingContext->unregisterNetworkGameObject(go);
-				Destroy(go);
-			}
+			int is_dummy = 0;
+			packet >> is_dummy;
+
+			GameObject* go = App->modLinkingContext->getNetworkGameObject(networkId);
+			bool dummy = false;
+
+			if (go)
+				dummy = true;
 
 			go = Instantiate();
-			App->modLinkingContext->registerNetworkGameObjectWithNetworkId(go, networkId);
 
+			if (dummy == false)
+			{
+				GameObject* go_del = App->modLinkingContext->getNetworkGameObject(networkId, false);
+				if (go_del)
+				{
+					App->modLinkingContext->unregisterNetworkGameObject(go_del);
+					Destroy(go_del);
+				}
+				
+				App->modLinkingContext->registerNetworkGameObjectWithNetworkId(go, networkId);
+			}
+
+			//--------------------------------------------------------------------------------------------
 			packet >> go->position.x;
 			packet >> go->position.y;
 			packet >> go->size.x;
@@ -64,8 +77,21 @@ void ReplicationManagerClient::read(const InputMemoryStream& packet)
 			else if (type == BehaviourType::Laser)
 				go->behaviour = App->modBehaviour->addLaser(go);
 
-
 			packet >> go->tag;
+
+			//--------------------------------------------------------------------------------------------
+
+			if (dummy)
+			{
+				Destroy(go);
+			}
+
+			if (is_dummy == 1)
+			{
+				App->modLinkingContext->unregisterNetworkGameObject(go);
+				Destroy(go);
+			}
+
 		}
 		else if (action == ReplicationAction::Update)
 		{
