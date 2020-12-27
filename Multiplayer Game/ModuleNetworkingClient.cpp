@@ -163,11 +163,7 @@ void ModuleNetworkingClient::onPacketReceived(const InputMemoryStream &packet, c
 					//Keyboard controller
 					InputController controller; 
 
-					controller.horizontalAxis = inputPacketData.horizontalAxis; 
-					controller.verticalAxis = inputPacketData.verticalAxis; 
-
-					unpackInputControllerButtons(inputPacketData.buttonBits, controller);
-					//inputControllerFromInputPacketData(inputPacketData, controller);
+					controller = inputControllerFromInputPacketData(inputPacketData, controller);
 					
 					Client_GameObject->behaviour->onInput(controller); 
 				}
