@@ -96,6 +96,10 @@ void ModuleNetworkingClient::onGui()
 
 			ImGui::Text("Input:");
 			ImGui::InputFloat("Delivery interval (s)", &inputDeliveryIntervalSeconds, 0.01f, 0.1f, 4);
+
+			ImGui::Separator(); 
+
+			ImGui::Checkbox("Client Prediction", &clientPrediction); 
 		}
 	}
 }
@@ -148,7 +152,26 @@ void ModuleNetworkingClient::onPacketReceived(const InputMemoryStream &packet, c
 				RepManagerClient.read(packet);
 			}
 
-			
+			if (clientPrediction)
+			{
+				GameObject* Client_GameObject = App->modLinkingContext->getNetworkGameObject(networkId); 
+
+				for (uint32 i = inputDataFront; i < inputDataBack; ++i)
+				{
+					InputPacketData& inputPacketData = inputData[i % ArrayCount(inputData)]; 
+
+					//Keyboard controller
+					InputController controller; 
+
+					controller.horizontalAxis = inputPacketData.horizontalAxis; 
+					controller.verticalAxis = inputPacketData.verticalAxis; 
+
+					unpackInputControllerButtons(inputPacketData.buttonBits, controller);
+					//inputControllerFromInputPacketData(inputPacketData, controller);
+					
+					Client_GameObject->behaviour->onInput(controller); 
+				}
+			}
 		}
 
 		// TODO(you): Reliability on top of UDP lab session
@@ -211,6 +234,17 @@ void ModuleNetworkingClient::onUpdate()
 			inputPacketData.horizontalAxis = Input.horizontalAxis;
 			inputPacketData.verticalAxis = Input.verticalAxis;
 			inputPacketData.buttonBits = packInputControllerButtons(Input);
+
+			if (clientPrediction)
+			{
+				GameObject* Client_GameObject = App->modLinkingContext->getNetworkGameObject(networkId);
+
+				if (!Client_GameObject)
+				{
+					Client_GameObject->behaviour->onInput(Input);
+				}
+			}
+
 		}
 
 		secondsSinceLastInputDelivery += Time.deltaTime;

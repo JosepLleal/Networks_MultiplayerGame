@@ -110,6 +110,6 @@ private:
 	//////////////////////////////////////////////////////////////////////
 
 	// TODO(you): Latency management lab session
-
+	bool clientPrediction = false; 
 };
 
