@@ -14,7 +14,9 @@ public:
 
 	void setPlayerInfo(const char *playerName, uint8 spaceshipType);
 
+	bool IsClientID(uint32 networkId);
 
+	bool InterpolationState() { return Interpolation; };
 
 private:
 
@@ -111,5 +113,6 @@ private:
 
 	// TODO(you): Latency management lab session
 	bool clientPrediction = false; 
+	bool Interpolation = false;
 };
 

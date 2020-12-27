@@ -18,6 +18,11 @@ void ModuleNetworkingClient::setPlayerInfo(const char * pPlayerName, uint8 pSpac
 	spaceshipType = pSpaceshipType;
 }
 
+bool ModuleNetworkingClient::IsClientID(uint32 net_id)
+{
+	return (net_id == networkId);
+}
+
 
 
 //////////////////////////////////////////////////////////////////////
@@ -100,6 +105,7 @@ void ModuleNetworkingClient::onGui()
 			ImGui::Separator(); 
 
 			ImGui::Checkbox("Client Prediction", &clientPrediction); 
+			ImGui::Checkbox("Client Interpolation", &Interpolation);
 		}
 	}
 }
@@ -165,7 +171,8 @@ void ModuleNetworkingClient::onPacketReceived(const InputMemoryStream &packet, c
 
 					controller = inputControllerFromInputPacketData(inputPacketData, controller);
 					
-					Client_GameObject->behaviour->onInput(controller); 
+					if(Client_GameObject)
+						Client_GameObject->behaviour->onInput(controller); 
 				}
 			}
 		}

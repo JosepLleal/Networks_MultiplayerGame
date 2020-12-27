@@ -30,6 +30,28 @@ bool ModuleGameObject::preUpdate()
 
 bool ModuleGameObject::update()
 {
+	//Interpolation
+	if (App->modNetClient->InterpolationState())
+	{
+		for (GameObject& go : gameObjects)
+		{
+			if (go.state == GameObject::State::UPDATING && go.behaviour && go.behaviour->type() != BehaviourType::Laser && !App->modNetClient->IsClientID(go.networkId))
+			{
+				// (1 - t) * v0 + t * v1
+				float lerp_value = go.interpolation.Seconds / REPLICATION_INTERVAL_SECONDS;
+
+				if (lerp_value > 1)
+					lerp_value = 1.0f;
+
+				go.interpolation.Seconds += Time.deltaTime;
+
+				go.position.x = lerp(go.interpolation.InitialPos.x, go.interpolation.FinalPos.x, lerp_value);
+				go.position.y = lerp(go.interpolation.InitialPos.y, go.interpolation.FinalPos.y, lerp_value);
+				go.angle = lerp(go.interpolation.InitialAngle, go.interpolation.FinalAngle, lerp_value);
+			}
+		}
+	}
+
 	// Delayed destructions
 	for (DelayedDestroyEntry &destroyEntry : gameObjectsWithDelayedDestruction)
 	{

@@ -74,14 +74,14 @@ void ReplicationManagerServer::write(OutputMemoryStream& packet, DeliveryDelegat
 		{
 			GameObject* go = App->modLinkingContext->getNetworkGameObject((*it).first);
 
-			if (go)
-			{
-				packet << go->position.x;
-				packet << go->position.y;
-				packet << go->size.x;
-				packet << go->size.y;
-				packet << go->angle;
-			}
+			packet << go->position.x;
+			packet << go->position.y;
+			packet << go->size.x;
+			packet << go->size.y;
+			packet << go->angle;
+
+			if(go->behaviour)
+				go->behaviour->write(packet);
 			
 		}
 		//Delete action does not need any more information than action and networID

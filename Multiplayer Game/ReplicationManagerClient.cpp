@@ -79,6 +79,12 @@ void ReplicationManagerClient::read(const InputMemoryStream& packet)
 
 			packet >> go->tag;
 
+			if (go->behaviour)
+			{ //initial positions
+				go->interpolation.InitialPos = go->position;
+				go->interpolation.InitialAngle = go->angle;
+			}
+
 			//--------------------------------------------------------------------------------------------
 
 			if (dummy)
@@ -97,14 +103,25 @@ void ReplicationManagerClient::read(const InputMemoryStream& packet)
 		{
 			GameObject* go = App->modLinkingContext->getNetworkGameObject(networkId);
 
-			if (go)
-			{
-				packet >> go->position.x;
-				packet >> go->position.y;
-				packet >> go->size.x;
-				packet >> go->size.y;
-				packet >> go->angle;
-			}
+			// Initial state
+			go->interpolation.InitialPos = go->position;
+			go->interpolation.InitialAngle = go->angle;
+
+			packet >> go->position.x;
+			packet >> go->position.y;
+			packet >> go->size.x;
+			packet >> go->size.y;
+			packet >> go->angle;
+
+			//Final state
+			go->interpolation.FinalPos = go->position;
+			go->interpolation.FinalAngle = go->angle;
+
+			if(!App->modNetClient->IsClientID(networkId)) // if go is different from client spaceship
+				go->interpolation.Seconds = 0.0; //reset interpolation time
+
+			if (go->behaviour)
+				go->behaviour->read(packet);
 			
 		}
 		else if (action == ReplicationAction::Destroy)

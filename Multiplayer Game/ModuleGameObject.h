@@ -9,6 +9,20 @@ struct GameObject
 	vec2 size = vec2{ 0.0f, 0.0f }; // NOTE(jesus): If equals 0, it takes the size of the texture
 	float angle = 0.0f;
 
+	//Interpolatio structure
+	struct Interpolation
+	{
+		vec2 InitialPos = vec2{ 0.0f, 0.0f };
+		vec2 FinalPos = vec2{ 0.0f, 0.0f };
+
+		float InitialAngle = 0.0f;
+		float FinalAngle = 0.0f;
+
+		float Seconds = 0.0f;
+	};
+
+	Interpolation interpolation;
+
 	// Render component
 	Sprite *sprite = nullptr;
 	Animation *animation = nullptr;
@@ -66,7 +80,9 @@ public:
 
 	static void Destroy(GameObject * gameObject, float delaySeconds);
 
-
+	float lerp(float v0, float v1, float t) {
+		return (1 - t) * v0 + t * v1;
+	}
 
 	GameObject gameObjects[MAX_GAME_OBJECTS] = {};
 
