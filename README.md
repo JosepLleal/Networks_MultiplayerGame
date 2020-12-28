@@ -4,9 +4,9 @@ Space ship is a simple 2D game prototype using a skeleton of an engine provided 
 ## Instructions
 Shoot to your enemies to kill them and recover health. Be the last space ship alive to win! 
 
-**Down Arrow** - Move 
+**Down Arrow** - Go forward 
 
-**Right/Left Arrow** - Shoot lasers
+**Left Arrow** - Shoot lasers
 
 **A** - Rotate left 
 
