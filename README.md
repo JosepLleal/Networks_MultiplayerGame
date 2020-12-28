@@ -17,7 +17,7 @@ Shoot to your enemies to kill them and recover health. Be the last space ship al
 Completely Achieved: 
 - **Overcoming packet loss using redundancy:** From client, we send all generated inputs until the server notifies their reception updating inputDataFront to avoid sending already processed input data. If we don't receive the server notification, we resend the last sent inputs plus the new ones using redundancy. With this technique we overcome packet loss with input data.
 - **Delegates from Delivery Manager:** When we send a replication packet a ReplicationDelegate is created and stores all the commands sent. In case a delivery packet times out, the delegate will only resend the type of replication action for each command from the packet. In case of DeliverySucess we do nothing. 
-- **Client Prediction:** If there is high lattency (and client prediction is enabled), from the client we process the inputs directly every frame so inputs feels more instantaneous. 
+- **Client Prediction:** If there is high lattency (and client prediction is enabled), from the client we process the inputs directly every frame so inputs feels more instantaneous. It works since there is not input lag but the spaceship shakes quite a lot...
 ### Developed by Josep
 Completely Achieved: 
 - **World State Replication:** From the server side, we keep track of all the event notification that happen for each game object serializing its fields and after some time send a replication packet to all the clients. Then, from the client side we read the replication packet deserializing its fields.
