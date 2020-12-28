@@ -242,7 +242,7 @@ void ModuleNetworkingClient::onUpdate()
 			{
 				GameObject* Client_GameObject = App->modLinkingContext->getNetworkGameObject(networkId);
 
-				if (!Client_GameObject)
+				if (Client_GameObject)
 				{
 					Client_GameObject->behaviour->onInput(Input);
 				}
