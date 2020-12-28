@@ -1,6 +1,7 @@
 #ifndef MODULE_SOUND_H
 #define MODULE_SOUND_H
 
+#define AUDIO_CLIPS 3
 
 struct sound_output;
 struct sound_output_buffer;
@@ -41,9 +42,9 @@ private:
 
 	void OutputAudio(sound_output *SoundOutput, sound_output_buffer *SourceBuffer, DWORD ByteToLock, DWORD BytesToWrite);
 
-	int16 Samples[48000 * 2];
+	int16 Samples[48000 * AUDIO_CLIPS];
 
-	AudioClip audioClips[2] = {};
+	AudioClip audioClips[AUDIO_CLIPS] = {};
 
 	enum audio_source_flags {
 		AUDIO_SOURCE_START_BIT = 1<<0,

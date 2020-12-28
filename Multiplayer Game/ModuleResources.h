@@ -17,11 +17,13 @@ public:
 	Texture *spacecraft3 = nullptr;
 	Texture *laser = nullptr;
 	Texture *explosion1 = nullptr;
+	Texture* healthpack = nullptr;
 
 	AnimationClip *explosionClip = nullptr;
 
 	AudioClip *audioClipLaser = nullptr;
 	AudioClip *audioClipExplosion = nullptr;
+	AudioClip* audioClipHealthPickUp = nullptr;
 
 	bool finishedLoading = false;
 

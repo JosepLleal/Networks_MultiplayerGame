@@ -13,6 +13,11 @@ bool ModuleBehaviour::update()
 		handleBehaviourLifeCycle(&behaviour);
 	}
 
+	for (HealthPack& behaviour : healthpacks)
+	{
+		handleBehaviourLifeCycle(&behaviour);
+	}
+
 	return true;
 }
 
@@ -24,6 +29,8 @@ Behaviour *ModuleBehaviour::addBehaviour(BehaviourType behaviourType, GameObject
 		return addSpaceship(parentGameObject);
 	case BehaviourType::Laser:
 		return addLaser(parentGameObject);
+	case BehaviourType::HealthPack:
+		return addHealthpack(parentGameObject);
 	default:
 		return nullptr;
 	}
@@ -49,6 +56,23 @@ Spaceship *ModuleBehaviour::addSpaceship(GameObject *parentGameObject)
 Laser *ModuleBehaviour::addLaser(GameObject *parentGameObject)
 {
 	for (Laser &behaviour : lasers)
+	{
+		if (behaviour.gameObject == nullptr)
+		{
+			behaviour = {};
+			behaviour.gameObject = parentGameObject;
+			parentGameObject->behaviour = &behaviour;
+			return &behaviour;
+		}
+	}
+
+	ASSERT(false);
+	return nullptr;
+}
+
+HealthPack* ModuleBehaviour::addHealthpack(GameObject* parentGameObject)
+{
+	for (HealthPack& behaviour : healthpacks)
 	{
 		if (behaviour.gameObject == nullptr)
 		{

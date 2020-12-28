@@ -58,6 +58,8 @@ void ReplicationManagerClient::read(const InputMemoryStream& packet)
 					go->sprite->texture = App->modResources->spacecraft3;
 				else if (tex == "laser.png")
 					go->sprite->texture = App->modResources->laser;
+				else if (tex == "healthPack.png")
+					go->sprite->texture = App->modResources->healthpack;
 				else if (tex == "explosion1.png")
 				{
 					go->sprite->texture = App->modResources->explosion1;
@@ -76,6 +78,8 @@ void ReplicationManagerClient::read(const InputMemoryStream& packet)
 				go->behaviour = App->modBehaviour->addSpaceship(go);
 			else if (type == BehaviourType::Laser)
 				go->behaviour = App->modBehaviour->addLaser(go);
+			else if(type == BehaviourType::HealthPack)
+				go->behaviour = App->modBehaviour->addHealthpack(go);
 
 			packet >> go->tag;
 
@@ -129,6 +133,9 @@ void ReplicationManagerClient::read(const InputMemoryStream& packet)
 			GameObject* go = App->modLinkingContext->getNetworkGameObject(networkId);
 			if (go)
 			{
+				if( go->behaviour && go->behaviour->type() == BehaviourType::HealthPack)
+					App->modSound->playAudioClip(App->modResources->audioClipHealthPickUp);
+
 				App->modLinkingContext->unregisterNetworkGameObject(go);
 				Destroy(go);
 			}

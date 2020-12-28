@@ -23,7 +23,6 @@ void Laser::update()
 			gameObject->collider = App->modCollision->addCollider(ColliderType::Laser, gameObject);
 		}
 
-		//NetworkUpdate(gameObject);
 
 		const float lifetimeSeconds = 2.0f;
 		if (secondsSinceCreation >= lifetimeSeconds) {
@@ -32,7 +31,10 @@ void Laser::update()
 	}
 }
 
-
+void HealthPack::start()
+{
+	gameObject->networkInterpolationEnabled = false;
+}
 
 
 
@@ -105,6 +107,28 @@ void Spaceship::update()
 void Spaceship::destroy()
 {
 	Destroy(lifebar);
+
+	//Create health pack ---------------------------
+
+	if (isServer)
+	{
+		GameObject* healthPack = NetworkInstantiate();
+
+		healthPack->position = gameObject->position;
+		healthPack->size = { 50, 50 };
+
+		healthPack->sprite = App->modRender->addSprite(healthPack);
+		healthPack->sprite->order = 3;
+		healthPack->sprite->texture = App->modResources->healthpack;
+
+		HealthPack* packBehaviour = App->modBehaviour->addHealthpack(healthPack);
+		packBehaviour->isServer = isServer;
+
+		App->modCollision->addCollider(ColliderType::Healthpack, healthPack);
+
+		healthPack->tag = murderer_tag;
+	}
+	
 }
 
 void Spaceship::onCollisionTriggered(Collider &c1, Collider &c2)
@@ -129,7 +153,7 @@ void Spaceship::onCollisionTriggered(Collider &c1, Collider &c2)
 				// Centered big explosion
 				size = 250.0f + 100.0f * Random.next();
 				position = gameObject->position;
-
+				murderer_tag = c2.gameObject->tag;
 				NetworkDestroy(gameObject);
 			}
 
@@ -150,6 +174,15 @@ void Spaceship::onCollisionTriggered(Collider &c1, Collider &c2)
 			// NOTE(jesus): Only played in the server right now...
 			// You need to somehow make this happen in clients
 			App->modSound->playAudioClip(App->modResources->audioClipExplosion);
+		}
+	}
+	else if (c2.type == ColliderType::Healthpack && c2.gameObject->tag == gameObject->tag)
+	{
+		if (isServer)
+		{
+			hitPoints = MAX_HIT_POINTS;
+			App->modSound->playAudioClip(App->modResources->audioClipHealthPickUp);
+			NetworkDestroy(c2.gameObject);
 		}
 	}
 }

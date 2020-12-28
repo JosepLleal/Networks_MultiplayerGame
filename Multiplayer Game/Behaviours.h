@@ -32,6 +32,7 @@ enum class BehaviourType : uint8
 	None,
 	Spaceship,
 	Laser,
+	HealthPack
 };
 
 
@@ -46,6 +47,13 @@ struct Laser : public Behaviour
 	void update() override;
 };
 
+struct HealthPack : public Behaviour
+{
+	BehaviourType type() const override { return BehaviourType::HealthPack; }
+
+	void start() override;
+};
+
 
 struct Spaceship : public Behaviour
 {
@@ -53,6 +61,8 @@ struct Spaceship : public Behaviour
 	uint8 hitPoints = MAX_HIT_POINTS;
 
 	GameObject *lifebar = nullptr;
+
+	uint32 murderer_tag = 0;
 
 	BehaviourType type() const override { return BehaviourType::Spaceship; }
 
